@@ -9,7 +9,7 @@ import ru.delimobil.cabbit.algebra.ChannelOnPool
 /* Channel instances must not be shared between threads */
 final class RabbitClientChannelOnPool[F[_]: Sync: ContextShift] private[client] (
   channel: client.Channel,
-  blocker: Blocker
+  blocker: Blocker,
 ) extends ChannelOnPool[F] {
 
   def delay[V](f: client.Channel => V): F[V] =

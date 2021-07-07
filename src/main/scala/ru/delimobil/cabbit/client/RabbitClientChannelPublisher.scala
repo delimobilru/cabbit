@@ -8,14 +8,14 @@ import ru.delimobil.cabbit.algebra.ExchangeName
 import ru.delimobil.cabbit.algebra.RoutingKey
 
 final class RabbitClientChannelPublisher[F[_]](
-  channelOnPool: ChannelOnPool[F]
+  channelOnPool: ChannelOnPool[F],
 ) extends ChannelPublisher[F] {
 
   def basicPublish[V](
     exchangeName: ExchangeName,
     routingKey: RoutingKey,
     properties: client.AMQP.BasicProperties,
-    body: V
+    body: V,
   )(implicit encoder: BodyEncoder[V]): F[Unit] =
     basicPublish(exchangeName, routingKey, properties, mandatory = false, body)
 
@@ -24,7 +24,7 @@ final class RabbitClientChannelPublisher[F[_]](
     routingKey: RoutingKey,
     properties: client.AMQP.BasicProperties,
     mandatory: Boolean,
-    body: V
+    body: V,
   )(implicit encoder: BodyEncoder[V]): F[Unit] = {
     val props =
       properties

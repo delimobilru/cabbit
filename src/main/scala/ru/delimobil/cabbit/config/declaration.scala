@@ -42,7 +42,7 @@ object declaration {
     durable: DurableConfig,
     exclusive: ExclusiveConfig,
     autoDelete: AutoDeleteConfig,
-    arguments: Arguments
+    arguments: Arguments,
   )
 
   case class ExchangeDeclaration(
@@ -51,12 +51,12 @@ object declaration {
     durable: DurableConfig,
     autoDelete: AutoDeleteConfig,
     internal: InternalConfig,
-    arguments: Arguments
+    arguments: Arguments,
   )
 
   case class BindDeclaration(
     queueName: QueueName,
     exchangeName: ExchangeName,
-    routingKey: RoutingKey
+    routingKey: RoutingKey,
   )
 }

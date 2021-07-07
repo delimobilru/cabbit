@@ -16,7 +16,7 @@ import cats.effect.ConcurrentEffect
 import cats.effect.syntax.all._
 
 final class RabbitClientChannelConsumer[F[_]: ConcurrentEffect](
-  channelOnPool: ChannelOnPool[F]
+  channelOnPool: ChannelOnPool[F],
 ) extends ChannelConsumer[F] {
 
   def basicQos(prefetchCount: Int): F[Unit] =
@@ -25,7 +25,7 @@ final class RabbitClientChannelConsumer[F[_]: ConcurrentEffect](
   def basicConsume(
     queueName: QueueName,
     deliverCallback: client.DeliverCallback,
-    cancelCallback: client.CancelCallback
+    cancelCallback: client.CancelCallback,
   ): F[ConsumerTag] =
     channelOnPool.delay(_.basicConsume(queueName.name, deliverCallback, cancelCallback)).map(ConsumerTag)
 
@@ -34,7 +34,7 @@ final class RabbitClientChannelConsumer[F[_]: ConcurrentEffect](
 
   def deliveryStream(
     queueName: QueueName,
-    prefetchCount: Int
+    prefetchCount: Int,
   ): F[(ConsumerTag, Stream[F, client.Delivery])] =
     for {
       _ <- basicQos(prefetchCount)
@@ -45,7 +45,7 @@ final class RabbitClientChannelConsumer[F[_]: ConcurrentEffect](
     } yield (tag, queue.dequeue)
 
   private def getCallbacks(
-    queue: NoneTerminatedQueue[F, client.Delivery]
+    queue: NoneTerminatedQueue[F, client.Delivery],
   ): (client.CancelCallback, client.DeliverCallback) = {
     val cancelCallback: client.CancelCallback = _ => queue.enqueue1(none).toIO.unsafeRunSync()
     val deliverCallback: client.DeliverCallback = (_, delivery) => queue.enqueue1(delivery.some).toIO.unsafeRunSync()

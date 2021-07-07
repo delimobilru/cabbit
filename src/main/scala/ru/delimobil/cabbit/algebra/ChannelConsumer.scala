@@ -11,13 +11,13 @@ trait ChannelConsumer[F[_]] extends ChannelAcker[F] {
   def basicConsume(
     queueName: QueueName,
     deliverCallback: client.DeliverCallback,
-    cancelCallback: client.CancelCallback
+    cancelCallback: client.CancelCallback,
   ): F[ConsumerTag]
 
   def basicGet(queue: QueueName, autoAck: Boolean): F[GetResponse]
 
   def deliveryStream(
     queueName: QueueName,
-    prefetchCount: Int
+    prefetchCount: Int,
   ): F[(ConsumerTag, Stream[F, client.Delivery])]
 }

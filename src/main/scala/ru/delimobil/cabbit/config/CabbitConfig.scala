@@ -17,7 +17,7 @@ case class CabbitConfig(
   username: Option[String],
   password: Option[String],
   sslConfig: SslConfig = SslConfig.default,
-  automaticRecovery: Boolean = true
+  automaticRecovery: Boolean = true,
 )
 
 object CabbitConfig {
@@ -31,7 +31,7 @@ object CabbitConfig {
   case class SslConfig(
     ssl: Boolean,
     context: Option[SSLContext],
-    saslConfig: SaslConfig
+    saslConfig: SaslConfig,
   )
 
   object SslConfig {
@@ -40,14 +40,14 @@ object CabbitConfig {
       SslConfig(
         ssl = false,
         context = none,
-        saslConfig = DefaultSaslConfig.PLAIN
+        saslConfig = DefaultSaslConfig.PLAIN,
       )
 
     def external(context: SSLContext): SslConfig =
       SslConfig(
         ssl = true,
         context.some,
-        saslConfig = DefaultSaslConfig.EXTERNAL
+        saslConfig = DefaultSaslConfig.EXTERNAL,
       )
   }
 }

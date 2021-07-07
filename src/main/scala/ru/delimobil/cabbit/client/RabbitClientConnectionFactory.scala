@@ -12,7 +12,7 @@ import ru.delimobil.cabbit.config.CabbitConfig
 import scala.jdk.CollectionConverters._
 
 final class RabbitClientConnectionFactory[F[_]: ConcurrentEffect: ContextShift](
-  config: CabbitConfig
+  config: CabbitConfig,
 ) extends ConnectionFactory[F] {
 
   private val factory = new client.ConnectionFactory()

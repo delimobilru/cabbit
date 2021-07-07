@@ -1,13 +1,16 @@
 package ru.delimobil.cabbit
 
-import cats.effect.{IO, Timer}
+import cats.effect.IO
+import cats.effect.Timer
 import cats.instances.list._
 import cats.syntax.apply._
 import cats.syntax.traverse._
 import com.rabbitmq.client.AMQP.BasicProperties
 import com.rabbitmq.client.BuiltinExchangeType
 import ru.delimobil.cabbit.algebra.BodyEncoder.instances.jsonGzip
-import ru.delimobil.cabbit.algebra.{Connection, QueueName, _}
+import ru.delimobil.cabbit.algebra.Connection
+import ru.delimobil.cabbit.algebra.QueueName
+import ru.delimobil.cabbit.algebra._
 import ru.delimobil.cabbit.config.declaration._
 
 import java.util.UUID
@@ -18,29 +21,28 @@ object TestUtils {
   implicit val timer: Timer[IO] = IO.timer(ExecutionContext.global)
 
   def channelWithPublishedMessage(connection: Connection[IO])(messages: List[String])(
-    assertF: (ChannelDeclaration[IO], ChannelConsumer[IO], QueueDeclaration) => IO[Unit]
+    assertF: (ChannelDeclaration[IO], ChannelConsumer[IO], QueueDeclaration) => IO[Unit],
   ): Unit = {
     val tuple =
       (connection.createChannelDeclaration, connection.createChannelConsumer, connection.createChannelPublisher)
     val action =
       tuple.tupled
-        .use {
-          case (declaration, consumerChannel, publisherChannel) =>
-            for {
-              declarations <- TestUtils.declare(declaration)
-              (_, queue, bind) = declarations
-              _ <- messages.traverse { message =>
-                publisherChannel.basicPublish(
-                  bind.exchangeName,
-                  bind.routingKey,
-                  new BasicProperties,
-                  mandatory = true,
-                  message
-                )
-              }
-              _ <- IO.sleep(50.millis)
-              _ <- assertF(declaration, consumerChannel, queue)
-            } yield {}
+        .use { case (declaration, consumerChannel, publisherChannel) =>
+          for {
+            declarations <- TestUtils.declare(declaration)
+            (_, queue, bind) = declarations
+            _ <- messages.traverse { message =>
+              publisherChannel.basicPublish(
+                bind.exchangeName,
+                bind.routingKey,
+                new BasicProperties,
+                mandatory = true,
+                message,
+              )
+            }
+            _ <- IO.sleep(50.millis)
+            _ <- assertF(declaration, consumerChannel, queue)
+          } yield {}
         }
 
     action.unsafeRunSync()
@@ -57,7 +59,7 @@ object TestUtils {
         DurableConfig.NonDurable,
         AutoDeleteConfig.AutoDelete,
         InternalConfig.NonInternal,
-        Map.empty
+        Map.empty,
       )
 
     val queue =
@@ -66,7 +68,7 @@ object TestUtils {
         DurableConfig.NonDurable,
         ExclusiveConfig.NonExclusive,
         AutoDeleteConfig.AutoDelete,
-        Map.empty
+        Map.empty,
       )
 
     val binding = BindDeclaration(queue.queueName, exchange.exchangeName, RoutingKey("the-key"))

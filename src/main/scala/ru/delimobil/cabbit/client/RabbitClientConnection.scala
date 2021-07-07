@@ -3,12 +3,10 @@ package ru.delimobil.cabbit.client
 import java.util.concurrent.Executors
 
 import cats.effect.Blocker
-import cats.effect.concurrent.Semaphore
 import cats.effect.ConcurrentEffect
 import cats.effect.ContextShift
 import cats.effect.Resource
 import cats.effect.Sync
-import cats.syntax.semigroupal._
 import com.rabbitmq.client
 import ru.delimobil.cabbit.algebra.ChannelConsumer
 import ru.delimobil.cabbit.algebra.ChannelDeclaration
@@ -17,7 +15,7 @@ import ru.delimobil.cabbit.algebra.ChannelPublisher
 import ru.delimobil.cabbit.algebra.Connection
 
 final class RabbitClientConnection[F[_]: ConcurrentEffect: ContextShift](
-  raw: client.Connection
+  raw: client.Connection,
 ) extends Connection[F] {
 
   private val getChannelExecutor =
@@ -26,7 +24,7 @@ final class RabbitClientConnection[F[_]: ConcurrentEffect: ContextShift](
         val thread = new Thread(runnable, s"rabbit-client-channel-${math.abs(hashCode)}")
         thread.setDaemon(true)
         thread
-      })
+      }),
     )
 
   def createChannelDeclaration: Resource[F, ChannelDeclaration[F]] =

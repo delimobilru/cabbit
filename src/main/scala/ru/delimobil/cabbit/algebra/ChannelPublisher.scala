@@ -8,7 +8,7 @@ trait ChannelPublisher[F[_]] {
     exchangeName: ExchangeName,
     routingKey: RoutingKey,
     properties: client.AMQP.BasicProperties,
-    body: V
+    body: V,
   )(implicit encoder: BodyEncoder[V]): F[Unit]
 
   def basicPublish[V](
@@ -16,6 +16,6 @@ trait ChannelPublisher[F[_]] {
     routingKey: RoutingKey,
     properties: client.AMQP.BasicProperties,
     mandatory: Boolean,
-    body: V
+    body: V,
   )(implicit encoder: BodyEncoder[V]): F[Unit]
 }
