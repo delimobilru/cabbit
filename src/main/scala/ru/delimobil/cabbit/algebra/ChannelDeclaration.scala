@@ -5,7 +5,7 @@ import ru.delimobil.cabbit.config.declaration.BindDeclaration
 import ru.delimobil.cabbit.config.declaration.ExchangeDeclaration
 import ru.delimobil.cabbit.config.declaration.QueueDeclaration
 
-trait ChannelDeclaration[F[_]] {
+trait ChannelDeclaration[F[_]] extends ShutdownNotifier[F] {
 
   def queueDeclare(queueDeclaration: QueueDeclaration): F[client.AMQP.Queue.DeclareOk]
 

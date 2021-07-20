@@ -35,4 +35,7 @@ final class RabbitClientChannelPublisher[F[_]](
 
     channelOnPool.delay(_.basicPublish(exchangeName.name, routingKey.name, mandatory, props, encoder.encode(body)))
   }
+
+  def isOpen: F[Boolean] =
+    channelOnPool.delay(_.isOpen)
 }
