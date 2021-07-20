@@ -26,10 +26,10 @@ class RabbitContainer private {
 
 object RabbitContainer {
 
-  def resource[F[_]: Sync]: Resource[F, RabbitContainer] =
+  def make[F[_]: Sync]: Resource[F, RabbitContainer] =
     Resource.make(Sync[F].delay(new RabbitContainer))(provider => Sync[F].delay(provider.container.stop()))
 
-  def connection[F[_]: ConcurrentEffect: ContextShift](
+  def makeConnection[F[_]: ConcurrentEffect: ContextShift](
     container: RabbitContainer
   ): Resource[F, Connection[F]] = {
     val nodes = NonEmptyList.one(CabbitConfig.CabbitNodeConfig(container.host, container.port))

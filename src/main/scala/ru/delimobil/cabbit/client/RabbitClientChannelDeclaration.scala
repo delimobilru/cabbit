@@ -57,4 +57,7 @@ final class RabbitClientChannelDeclaration[F[_]: Functor](
 
   def exchangeDelete(exchangeName: ExchangeName): F[Unit] =
     channel.delay(_.exchangeDelete(exchangeName.name)).void
+
+  def isOpen: F[Boolean] =
+    channel.delay(_.isOpen)
 }

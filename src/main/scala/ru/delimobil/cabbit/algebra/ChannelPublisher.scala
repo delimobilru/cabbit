@@ -2,7 +2,7 @@ package ru.delimobil.cabbit.algebra
 
 import com.rabbitmq.client
 
-trait ChannelPublisher[F[_]] {
+trait ChannelPublisher[F[_]] extends ShutdownNotifier[F] {
 
   def basicPublish[V](
     exchangeName: ExchangeName,
